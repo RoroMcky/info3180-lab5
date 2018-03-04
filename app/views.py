@@ -42,10 +42,15 @@ def login():
                     return redirect(url_for("secure_page"))
               else:
                    flash('Username or Password is incorrect.', 'danger')
-                   return render_template("login.html", form=form)
+    return render_template("login.html", form=form)
 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session
+@app.route("/secure_page")
+@login_required
+def secure_page():
+    return render_template('secure_page.html')
+    
 @login_manager.user_loader
 def load_user(id):
     return UserProfile.query.get(int(id))
@@ -60,7 +65,13 @@ def send_text_file(file_name):
     """Send your static text file."""
     file_dot_text = file_name + '.txt'
     return app.send_static_file(file_dot_text)
-
+@app.route("/logout")
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'danger')
+    return redirect(url_for('home'))
+    
+    
 
 @app.after_request
 def add_header(response):
